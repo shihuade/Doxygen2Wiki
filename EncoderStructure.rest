@@ -1,0 +1,25 @@
+This file describes the  SLTRConfig
+
+.. contents:: 
+    :local: 
+    :depth: 2
+
+
+Methods(ISVCEncoder)
+============================
+
+structure for LTR configure
+
+
++--------------------------+------+-------------+
+|Name                      |Type  |Descritpion  |
++--------------------------+------+-------------+
+|bEnableLongTermReference  |bool  |             |
++--------------------------+------+-------------+
+|iLTRRefNum                |int   |             |
++--------------------------+------+-------------+
+
+
+
+
+

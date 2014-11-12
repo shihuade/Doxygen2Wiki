@@ -1,0 +1,104 @@
+This page is about the example of encoder usage
+
+.. contents:: 
+    :local: 
+    :depth: 2
+
+
+Encoder Usage Example(ISVCEncoder)
+============================
+Example-1 use basic parameter
+
+::
+
+  Step1:setup encoder
+       int rv = WelsCreateSVCEncoder (&encoder_);
+       ASSERT_EQ (0, rv);
+       ASSERT_TRUE (encoder_ != NULL);
+  
+  Step2:initilize by using base parameter
+       SEncParamBase param;
+       memset (&param, 0, sizeof (SEncParamBase));
+       param.iUsageType = usageType;
+       param.fMaxFrameRate = frameRate;
+       param.iPicWidth = width;
+       param.iPicHeight = height;
+       param.iTargetBitrate = 5000000;
+       param.iInputCsp = videoFormatI420;
+       encoder_->Initialize (&param);
+  
+  Step3:set option, you aslo call SetOption during encoding   
+       encoder_->SetOption (ENCODER_OPTION_TRACE_LEVEL, &g_LevelSetting);
+  
+  Step4: encoding and  store ouput bistream 
+       int frameSize = width * height * 3 / 2;
+       BufferedData buf;
+       buf.SetLength (frameSize);
+       ASSERT_TRUE (buf.Length() == (size_t)frameSize);
+       SFrameBSInfo info;
+       memset (&info, 0, sizeof (SFrameBSInfo));
+       SSourcePicture pic;
+       memset (&pic, 0, sizeof (SsourcePicture));
+       pic.iPicWidth = width;
+       pic.iPicHeight = height;
+       pic.iColorFormat = videoFormatI420;
+       pic.iStride[0] = pic.iPicWidth;
+       pic.iStride[1] = pic.iStride[2] = pic.iPicWidth >> 1;
+       pic.pData[0] = buf.data();
+       pic.pData[1] = pic.pData[0] + width * height;
+       pic.pData[2] = pic.pData[1] + (width * height >> 2);
+       for(int num = 0;num<total_num;num++) {
+           //prepare input data 
+          rv = encoder_->EncodeFrame (&pic, &info);
+          ASSERT_TRUE (rv == cmResultSuccess);
+          if (info.eFrameType != videoFrameTypeSkip && cbk != NULL) {
+           //output bitstream 
+          }
+       }
+  
+  Step5:teardown encoder
+       if (encoder_) {
+           encoder_->Uninitialize();
+           WelsDestroySVCEncoder (encoder_);
+       }
+
+Example-2 use extension parameter
+
+::
+
+  The same operation on Step 1,3,4,5 with Example-1 
+  
+  Step 2:initialize by using extension parameter
+       SEncParamExt param;
+       encoder->GetDefaultParams (&param);
+       param.iUsageType = usageType;
+       param.fMaxFrameRate = frameRate;
+       param.iPicWidth = width;
+       param.iPicHeight = height;
+       param.iTargetBitrate = 5000000;
+       param.iInputCsp = videoFormatI420;
+       param.bEnableDenoise = denoise;
+       param.iSpatialLayerNum = layers;
+       if (sliceMode != SM_SINGLE_SLICE && sliceMode != SM_DYN_SLICE) //SM_DYN_SLICE don't support multi-thread now
+           param.iMultipleThreadIdc = 2;
+  
+       for (int i = 0; i < param.iSpatialLayerNum; i++) {
+           param.sSpatialLayers[i].iVideoWidth = width >> (param.iSpatialLayerNum - 1 - i);
+           param.sSpatialLayers[i].iVideoHeight = height >> (param.iSpatialLayerNum - 1 - i);
+           param.sSpatialLayers[i].fFrameRate = frameRate;
+           param.sSpatialLayers[i].iSpatialBitrate = param.iTargetBitrate;
+  
+           param.sSpatialLayers[i].sSliceCfg.uiSliceMode = sliceMode;
+           if (sliceMode == SM_DYN_SLICE) {
+               param.sSpatialLayers[i].sSliceCfg.sSliceArgument.uiSliceSizeConstraint = 600;
+               param.uiMaxNalSize = 1500;
+           }
+       }
+       param.iTargetBitrate *= param.iSpatialLayerNum;
+       encoder_->InitializeExt (&param);
+
+
+
+
+
+

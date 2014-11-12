@@ -1,0 +1,49 @@
+This page is about the example of decoder usage
+
+.. contents:: 
+    :local: 
+    :depth: 2
+
+
+Decoder Usage Example(ISVCDecoder)
+============================
+A dummy process for using the decoder could be: (for static library)
+
+::
+
+  Step 1:decoder declaration
+       ISVCDecoder *pSvcDecoder;       //declare a decoder
+          unsigned char *pBuf =...;       //input: encoded bitstream start position; should include start code prefix
+          int iSize =...;                 //input: encoded bitsteam length; should include the size of start code prefix
+          unsigned char *pData[3] =...;   //output: [0~2] for Y,U,V buffer
+       SBufferInfo sDstBufInfo;        //in-out: declare the output buffer info
+          memset(&sDstBufInfo, 0, sizeof(SBufferInfo));
+  
+     Step 2:create a decoder
+       CreateDecoder(pSvcDecoder);
+  
+     Step 3:declare required param
+       SDecodingParam sDecParam = {0};
+          sDecParam.sVideoProperty.eVideoBsType = VIDEO_BITSTREAM_AVC;
+  
+     Step 4:initialize the param and decoder context, allocate memory    
+       Initialize(&sDecParam);
+  
+     Step 5:do actual decoding for slice level; this can be done in a loop until data ends
+       iRet = DecodeFrame2(pBuf, iSize, pData, &sDstBufInfo);
+          If (iRet != 0){                     //Decode failed
+              RequestIDR or something like that.
+       }
+       if (sDstBufInfo.iBufferStatus==1){  //pData can be used for render.
+           output pData[0], pData[1], pData[2];
+       }
+  
+     Step 6:Uninitialize the decoder and memory free
+       Uninitialize();
+  
+     Step 7:Destroy the decoder
+       DestroyDecoder();
+
+
+
+

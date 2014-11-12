@@ -7,14 +7,8 @@
 this is for openh264 API documentation wiki
     - `ISVCEncoder <wiki/ISVCEncoder>`_
     - `ISVCEncoder <wiki/ISVCDecoder>`_
-
-
-
-Notes: to be done
-    - `WMEInit` will be replaced with `InitMediaEngine`
-    - `WMEUnInit` will be replaced with `UninitMediaEngine` 
-   to me done
-
+    - `Example code for encoder usage <wiki/UsageExampleForEncoder>`_
+    - `Example code for decoder usage <wiki/UsageExampleForDecoder>`_
 
 
 3. Classes
