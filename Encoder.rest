@@ -1,0 +1,224 @@
+This file describes the interface ISVCEncoder
+
+.. contents:: 
+    :local: 
+    :depth: 2
+
+
+Methods(IWmeMediaConnection)
+============================
+
+
+.. _ref-1ad68cd7269a23e2af216b60eb15ec9562:
+
+Initialize
+--------------------
+
+initial the encoder
+
+
+
+
+    | CM_RETURN: 0 - success; otherwise - failed;
+
+
+
+
++--------+-------------------------+-------------------------+
+|Name    |Type                     |Descritpion              |
++--------+-------------------------+-------------------------+
+|pParam  |const`SEncParamBase`_ *  |basic encoder parameter  |
+|        |                         |                         |
++--------+-------------------------+-------------------------+
+
+.. _ref-1a109085ce1dadf49719876bdc62d0f76d:
+
+InitializeExt
+--------------------
+
+Initilaize encoder by using extension parameters.
+
+
+
+
+    | CM_RETURN: 0 - success; otherwise - failed;
+
+
+
+
++--------+------------------------+---------------------------------+
+|Name    |Type                    |Descritpion                      |
++--------+------------------------+---------------------------------+
+|pParam  |const`SEncParamExt`_ *  |extension parameter for encoder  |
+|        |                        |                                 |
++--------+------------------------+---------------------------------+
+
+.. _ref-1aa2cfe4d19eb1814c8104926165aff00a:
+
+GetDefaultParams
+--------------------
+
+Get the default extension parameters. if you want to change some parameters of
+encoder, firstly you need to get the default encoding parameters, after that you
+can change part of parameters you want to.
+
+
+
+
+    | CM_RETURN: 0 - success; otherwise - failed;
+
+
+
+
++--------+-------------------+---------------------------------+
+|Name    |Type               |Descritpion                      |
++--------+-------------------+---------------------------------+
+|pParam  |`SEncParamExt`_ *  |extension parameter for encoder  |
+|        |                   |                                 |
++--------+-------------------+---------------------------------+
+
+.. _ref-1a50824ed4c3b164806147adcd55c84b81:
+
+Uninitialize
+--------------------
+
+uninitialize the encoder
+
+
+
+.. _ref-1a8dd9e92a6721f001e95243d09cb4aff4:
+
+EncodeFrame
+--------------------
+
+encode one frame
+
+
+
+
+    | 0 - success; otherwise -failed;
+
+
+
+
++----------+--------------------------+--------------------------------------------------------------------------------+
+|Name      |Type                      |Descritpion                                                                     |
++----------+--------------------------+--------------------------------------------------------------------------------+
+|kpSrcPic  |const`SSourcePicture`_ *  |the pointer to the source luminance plane chrominance data: CbData = kpSrc +    |
+|          |                          |m_iMaxPicWidth * m_iMaxPicHeight; CrData = CbData + (m_iMaxPicWidth *           |
+|          |                          |m_iMaxPicHeight)/4; the application calling this interface needs to ensure the  |
+|          |                          |data validation between the location                                            |
+|          |                          |                                                                                |
++----------+--------------------------+--------------------------------------------------------------------------------+
+|pBsInfo   |`SFrameBSInfo`_ *         |output bit stream                                                               |
+|          |                          |                                                                                |
++----------+--------------------------+--------------------------------------------------------------------------------+
+
+.. _ref-1a99d96e13e244724ffa82e0b6cb31f0d0:
+
+EncodeParameterSets
+--------------------
+
+encode the parameters from output bit stream
+
+
+
+
+    | 0 - success; otherwise - failed;
+
+
+
+
++---------+-------------------+-------------------+
+|Name     |Type               |Descritpion        |
++---------+-------------------+-------------------+
+|pBsInfo  |`SFrameBSInfo`_ *  |output bit stream  |
+|         |                   |                   |
++---------+-------------------+-------------------+
+
+.. _ref-1a6a798481c3a6942d29abbc30fe43fbda:
+
+ForceIntraFrame
+--------------------
+
+for encoder to encoder frame as IDR if bIDR set as true
+
+
+
+
+    | 0 - success; otherwise - failed;
+
+
+
+
++------+------+---------------------------------------------------------------------------------+
+|Name  |Type  |Descritpion                                                                      |
++------+------+---------------------------------------------------------------------------------+
+|bIDR  |bool  |true: force encoder to encode frame as IDR frame;false, return 1 and nothing to  |
+|      |      |do                                                                               |
+|      |      |                                                                                 |
++------+------+---------------------------------------------------------------------------------+
+
+.. _ref-1a54140447c864135465d1a0b4c8c1b9bb:
+
+SetOption
+--------------------
+
+set option for encoder, detail option type, please refer to enumurate
+ENCODER_OPTION.
+
+
+
+
+    | CM_RETURN: 0 - success; otherwise - failed;
+
+
+
+
++-----------+--------------------+-------------------------------------------------------------------------------+
+|Name       |Type                |Descritpion                                                                    |
++-----------+--------------------+-------------------------------------------------------------------------------+
+|eOptionId  |`ENCODER_OPTION`_   |                                                                               |
++-----------+--------------------+-------------------------------------------------------------------------------+
+|pOption    |void *              |option for encoder such as InDataFormat, IDRInterval, SVC Encode Param, Frame  |
+|           |                    |Rate, Bitrate,...                                                              |
+|           |                    |                                                                               |
++-----------+--------------------+-------------------------------------------------------------------------------+
+
+.. _ref-1a9a5fa028b139fab5762e76f423dfe237:
+
+GetOption
+--------------------
+
+get option for encoder, detail option type, please refer to enumurate
+ENCODER_OPTION.
+
+
+
+
+    | CM_RETURN: 0 - success; otherwise - failed;
+
+
+
+
++-----------+--------------------+-------------------------------------------------------------------------------+
+|Name       |Type                |Descritpion                                                                    |
++-----------+--------------------+-------------------------------------------------------------------------------+
+|eOptionId  |`ENCODER_OPTION`_   |                                                                               |
++-----------+--------------------+-------------------------------------------------------------------------------+
+|pOption    |void *              |option for encoder such as InDataFormat, IDRInterval, SVC Encode Param, Frame  |
+|           |                    |Rate, Bitrate,...                                                              |
+|           |                    |                                                                               |
++-----------+--------------------+-------------------------------------------------------------------------------+
+
+
+.. _`SEncParamExt`: TypesAndStructures
+
+.. _`ENCODER_OPTION`: TypesAndStructures#wiki-ref-1af450b46a3ff3622f890a12fc16b9a5e0
+
+.. _`SSourcePicture`: TypesAndStructures
+
+.. _`SEncParamBase`: TypesAndStructures
+
+.. _`SFrameBSInfo`: TypesAndStructures
+
