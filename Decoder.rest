@@ -1,0 +1,213 @@
+This file describes the interface ISVCDecoder
+
+.. contents:: 
+    :local: 
+    :depth: 2
+
+
+Methods(ISVCDecoder)
+============================
+
+
+.. _ref-1a1ead64fe20c9247468fbe96311225202:
+
+Initialize
+--------------------
+
+initilaize decoder
+
+
++--------+--------------------------+-------------+
+|Name    |Type                      |Descritpion  |
++--------+--------------------------+-------------+
+|pParam  |const`SDecodingParam`_ *  |             |
++--------+--------------------------+-------------+
+
+.. _ref-1a9234466074f47e87635b9c241d9790a5:
+
+Uninitialize
+--------------------
+
+uninitialize the decoder
+
+
+
+.. _ref-1ab24be09fa7b7184f3385b9766bbfd872:
+
+DecodeFrame
+--------------------
+
+to do ...
+
+
++---------+-----------------------+-------------+
+|Name     |Type                   |Descritpion  |
++---------+-----------------------+-------------+
+|pSrc     |const unsigned char *  |             |
++---------+-----------------------+-------------+
+|iSrcLen  |const int              |             |
++---------+-----------------------+-------------+
+|ppDst    |unsigned char **       |             |
++---------+-----------------------+-------------+
+|pStride  |int *                  |             |
++---------+-----------------------+-------------+
+|iWidth   |int &                  |             |
++---------+-----------------------+-------------+
+|iHeight  |int &                  |             |
++---------+-----------------------+-------------+
+
+.. _ref-1a8a2809ee3b6df4aeae60a5e5bb48f240:
+
+DecodeFrame2
+--------------------
+
+for slice level `DecodeFrame2()`_ (4 parameters input), whatever the function return value is, the outputted data
+of I420 format will only be available when pDstInfo->iBufferStatus == 1,. (e.g.,
+in multi-slice cases, only when the whole picture is completely reconstructed,
+this variable would be set as 1.)
+
+
++----------+-----------------------+-------------+
+|Name      |Type                   |Descritpion  |
++----------+-----------------------+-------------+
+|pSrc      |const unsigned char *  |             |
++----------+-----------------------+-------------+
+|iSrcLen   |const int              |             |
++----------+-----------------------+-------------+
+|ppDst     |unsigned char **       |             |
++----------+-----------------------+-------------+
+|pDstInfo  |`SBufferInfo`_ *       |             |
++----------+-----------------------+-------------+
+
+.. _ref-1a99b92c661d5e4c0756d3af12db232518:
+
+DecodeParser
+--------------------
+
+This function parse input bitstream only, and rewrite possible SVC syntax to AVC
+syntax.
+
+
++----------+-----------------------+-------------+
+|Name      |Type                   |Descritpion  |
++----------+-----------------------+-------------+
+|pSrc      |const unsigned char *  |             |
++----------+-----------------------+-------------+
+|iSrcLen   |const int              |             |
++----------+-----------------------+-------------+
+|pDstInfo  |SParserBsInfo *        |             |
++----------+-----------------------+-------------+
+
+.. _ref-1a93cbd24cdf4d80a0fc39acf1924d1f7c:
+
+DecodeFrameEx
+--------------------
+
+this API does not work for now!! This is for future use to support non-I420
+color format output.
+
+
++--------------+-----------------------+-------------+
+|Name          |Type                   |Descritpion  |
++--------------+-----------------------+-------------+
+|pSrc          |const unsigned char *  |             |
++--------------+-----------------------+-------------+
+|iSrcLen       |const int              |             |
++--------------+-----------------------+-------------+
+|pDst          |unsigned char *        |             |
++--------------+-----------------------+-------------+
+|iDstStride    |int                    |             |
++--------------+-----------------------+-------------+
+|iDstLen       |int &                  |             |
++--------------+-----------------------+-------------+
+|iWidth        |int &                  |             |
++--------------+-----------------------+-------------+
+|iHeight       |int &                  |             |
++--------------+-----------------------+-------------+
+|iColorFormat  |int &                  |             |
++--------------+-----------------------+-------------+
+
+.. _ref-1a4d377ece4916af730053cc0fea6342bd:
+
+SetOption
+--------------------
+
+set option for decoder, detail option type, please refer to enumurate
+DECODER_OPTION.
+
+
++-----------+--------------------+-------------+
+|Name       |Type                |Descritpion  |
++-----------+--------------------+-------------+
+|eOptionId  |`DECODER_OPTION`_   |             |
++-----------+--------------------+-------------+
+|pOption    |void *              |             |
++-----------+--------------------+-------------+
+
+.. _ref-1a7a402d15b5df4d0bf57a6332de6c72d4:
+
+GetOption
+--------------------
+
+get option for decoder, detail option type, please refer to enumurate
+DECODER_OPTION.
+
+
++-----------+--------------------+-------------+
+|Name       |Type                |Descritpion  |
++-----------+--------------------+-------------+
+|eOptionId  |`DECODER_OPTION`_   |             |
++-----------+--------------------+-------------+
+|pOption    |void *              |             |
++-----------+--------------------+-------------+
+
+Usage Example(ISVCDecoder)
+============================
+A dummy process for using the decoder could be: (for static library)
+
+::
+
+  Step 1:decoder declaration
+       ISVCDecoder *pSvcDecoder;       //declare a decoder
+          unsigned char *pBuf =...;       //input: encoded bitstream start position; should include start code prefix
+          int iSize =...;                 //input: encoded bitsteam length; should include the size of start code prefix
+          unsigned char *pData[3] =...;   //output: [0~2] for Y,U,V buffer
+       SBufferInfo sDstBufInfo;        //in-out: declare the output buffer info
+          memset(&sDstBufInfo, 0, sizeof(SBufferInfo));
+  
+     Step 2:create a decoder
+       CreateDecoder(pSvcDecoder);
+  
+     Step 3:declare required param
+       SDecodingParam sDecParam = {0};
+          sDecParam.sVideoProperty.eVideoBsType = VIDEO_BITSTREAM_AVC;
+  
+     Step 4:initialize the param and decoder context, allocate memory    
+       Initialize(&sDecParam);
+  
+     Step 5:do actual decoding for slice level; this can be done in a loop until data ends
+       iRet = DecodeFrame2(pBuf, iSize, pData, &sDstBufInfo);
+          If (iRet != 0){                     //Decode failed
+              RequestIDR or something like that.
+       }
+       if (sDstBufInfo.iBufferStatus==1){  //pData can be used for render.
+           output pData[0], pData[1], pData[2];
+       }
+  
+     Step 6:Uninitialize the decoder and memory free
+       Uninitialize();
+  
+     Step 7:Destroy the decoder
+       DestroyDecoder();
+
+
+
+
+.. _`DecodeFrame2()`: ISVCDecoder#wiki-ref-1a8a2809ee3b6df4aeae60a5e5bb48f240
+
+.. _`DECODER_OPTION`: TypesAndStructures#wiki-ref-1a218da3bf15cd95680f87cbec575da3b8
+
+.. _`SDecodingParam`: TypesAndStructures
+
+.. _`SBufferInfo`: TypesAndStructures
+

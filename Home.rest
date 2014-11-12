@@ -6,8 +6,8 @@
 
 this is for openh264 API documentation wiki
     - `ISVCEncoder <wiki/ISVCEncoder>`_
- 
-    
+    - `ISVCEncoder <wiki/ISVCDecoder>`_
+
 
 
 Notes: to be done
@@ -16,13 +16,10 @@ Notes: to be done
    to me done
 
 
-2. Basic call flow
----------------------
-
-Here is the basic call flow for video:
 
 3. Classes
 ---------------------
 
  - `ISVCEncoder <wiki/ISVCEncoder>`_
-
+ - `ISVCDecoder <wiki/ISVCDecoder>`_
+ - `Types and Structures <wiki/TypesAndStructures>`_
