@@ -1,5 +1,5 @@
 This file describes the  SLTRConfig
-
+add from luckyshd
 .. contents:: 
     :local: 
     :depth: 2
